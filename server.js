@@ -2,15 +2,9 @@ const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
-const {
-    ObjectID
-} = require('mongodb');
-var {
-    Tour
-} = require('./models/tour');
-var {
-    Resort
-} = require('./models/resort');
+const {ObjectID} = require('mongodb');
+var {Tour} = require('./models/tour');
+var {Resort} = require('./models/resort');
 
 mongoose.connect("mongodb://localhost/wildfire", {
     useNewUrlParser: true
@@ -34,9 +28,9 @@ app.use(bodyParser.json());
 
 
 
-//When user wants to tour
-app.post('/tour', (req, res) => {
-    var tour = new Tour({
+//When user wants to book resort
+app.post('/resort', (req, res) => {
+    var resort = new Resort({
         place: req.body.place,
         type: req.body.type,
         cost: {
@@ -51,7 +45,7 @@ app.post('/tour', (req, res) => {
         }
     });
 
-    tour.save().then((doc) => {
+    resort.save().then((doc) => {
         res.send(doc);
     }, (e) => {
         res.status(400).send(e);
@@ -60,9 +54,9 @@ app.post('/tour', (req, res) => {
 
 
 
-//When user wants to book resort
-app.post('/resort', (req, res) => {
-    var resort = new Resort({
+//When user wants to tour
+app.post('/tour', (req, res) => {
+    var tour = new Tour({
         place: req.body.place,
         type: req.body.type,
         cost: {
@@ -75,7 +69,7 @@ app.post('/resort', (req, res) => {
         }
     });
 
-    resort.save().then((doc) => {
+    tour.save().then((doc) => {
         res.send(doc);
     }, (e) => {
         res.status(400).send(e);
@@ -91,39 +85,6 @@ app.post('/resort', (req, res) => {
 
 
 
-//Tour Fetch
-app.get('/tours', (req, res) => {
-    Tour.find().then((tours) => {
-        res.send({
-            tours
-        });
-    }, (e) => {
-        res.status(400).send(e);
-    });
-});
-
-app.get('/tours/:id', (req, res) => {
-    var id = req.params.id;
-
-    if (!ObjectID.isValid(id)) {
-        return res.status(404).send();
-    }
-
-    Tour.findById(id).then((todo) => {
-        if (!todo) {
-            return res.status(404).send();
-        }
-
-        res.send({
-            tours
-        });
-    }).catch((e) => {
-        res.status(400).send();
-    });
-});
-
-
-
 //Resort Fetch
 app.get('/resort', (req, res) => {
     Resort.find().then((tours) => {
@@ -135,25 +96,21 @@ app.get('/resort', (req, res) => {
     });
 });
 
-app.get('/resort/:id', (req, res) => {
-    var id = req.params.id;
 
-    if (!ObjectID.isValid(id)) {
-        return res.status(404).send();
-    }
 
-    Resort.findById(id).then((todo) => {
-        if (!todo) {
-            return res.status(404).send();
-        }
 
+//Tour Fetch
+app.get('/tours', (req, res) => {
+    Tour.find().then((tours) => {
         res.send({
             tours
         });
-    }).catch((e) => {
-        res.status(400).send();
+    }, (e) => {
+        res.status(400).send(e);
     });
 });
+
+
 
 
 
@@ -165,40 +122,10 @@ app.get('/resort/:id', (req, res) => {
 
 
 
-//Tour Update
-app.post('/tourUpdate/:id', (req, res) => {
-    var id = req.params.id;
-    var body = _.pick(req.body, ['place', 'type', 'cost.actual_cost', 'cost.discount_cost', 'Itinerary.welcome_drinks', 'Itinerary.breakfast', 'Itinerary.games', 'Itinerary.watergames']);
-
-    if (!ObjectID.isValid(id)) {
-        return res.status(404).send();
-    }
-
-
-    Tour.findByIdAndUpdate(id, {
-        $set: body
-    }, {
-        upsert: true
-    }).then((tour) => {
-        if (!tour) {
-            return res.status(404).send();
-        }
-
-        res.send({
-            tour
-        });
-    }).catch((e) => {
-        res.status(400).send();
-        console.log('Error', e)
-    })
-
-
-});
-
-//Resort  Update
+//Resort Update
 app.post('/resortUpdate/:id', (req, res) => {
     var id = req.params.id;
-    var body = _.pick(req.body, ['place', 'type', 'cost.actual_cost', 'cost.discount_cost', 'Itinerary.Day1', 'Itinerary.Day2']);
+    var body = _.pick(req.body, ['place', 'type', 'cost.actual_cost', 'cost.discount_cost', 'Itinerary.welcome_drinks', 'Itinerary.breakfast', 'Itinerary.games', 'Itinerary.watergames']);
 
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
@@ -216,6 +143,36 @@ app.post('/resortUpdate/:id', (req, res) => {
 
         res.send({
             resort
+        });
+    }).catch((e) => {
+        res.status(400).send();
+        console.log('Error', e)
+    })
+
+
+});
+
+//Tour  Update
+app.post('/tourUpdate/:id', (req, res) => {
+    var id = req.params.id;
+    var body = _.pick(req.body, ['place', 'type', 'cost.actual_cost', 'cost.discount_cost', 'Itinerary.Day1', 'Itinerary.Day2']);
+
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+
+    Tour.findByIdAndUpdate(id, {
+        $set: body
+    }, {
+        upsert: true
+    }).then((tour) => {
+        if (!tour) {
+            return res.status(404).send();
+        }
+
+        res.send({
+            tour
         });
     }).catch((e) => {
         res.status(400).send();

@@ -20,22 +20,18 @@ var Tour = mongoose.model('Tour', {
         }
     },
     Itinerary: {
-        welcome_drinks: {
-            type: String,
-        },
-        breakfast: [
+        
+        Day1: [
             {
                 type: String,
             }
         ],
-        games: [
+        Day2: [
             {
                 type: String,
             }
         ],
-        watergames: {
-            type: String,
-        }
+       
     }
 });
 

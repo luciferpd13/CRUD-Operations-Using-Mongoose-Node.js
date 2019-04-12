@@ -20,18 +20,22 @@ var Resort = mongoose.model('Resort', {
         }
     },
     Itinerary: {
-        
-        Day1: [
+        welcome_drinks: {
+            type: String,
+        },
+        breakfast: [
             {
                 type: String,
             }
         ],
-        Day2: [
+        games: [
             {
                 type: String,
             }
         ],
-       
+        watergames: {
+            type: String,
+        }
     }
 });
 
